@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/jpeg" href="./foto-utama.png"> <!-- Ganti dengan foto kamu untuk favicon -->
+<title>Selamat Ulang Tahun — Ayah &amp; Ibu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ===== GANTI DATA DI SINI ===== */
+  /* Lihat bagian <script> di bawah untuk mengubah nama, tanggal, dan isi surat */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FAF7F2;
+    --cream-dark: #F0EBE1;
+    --ink: #2C2418;
+    --ink-light: #6B5F52;
+    --ink-muted: #A89880;
+    --gold: #C8955A;
+    --gold-light: #E8C99A;
+    --warm-red: #B85C4A;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ===== CONFETTI ===== */
+  #confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    background: var(--cream);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(200,149,90,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(184,92,74,0.06) 0%, transparent 50%);
+  }
+
+  .hero-ornament {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 10vw, 96px);
+    font-weight: 500;
+    line-height: 1.0;
+    color: var(--ink);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-names {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 400;
+    color: var(--ink-light);
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.9s forwards;
+  }
+
+  .hero-date {
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.1s forwards;
+  }
+
+  .hero-scroll {
+    opacity: 0;
+    animation: fadeUp 1s ease 1.4s forwards;
+  }
+
+  .hero-scroll a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ink-muted);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: var(--gold-light);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ===== LETTERS SECTION ===== */
+  .section {
+    padding: 80px 24px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--gold-light);
+  }
+
+  /* envelope grid */
+  .envelope-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+
+  .envelope-btn {
+    background: none;
+    border: 0.5px solid #D9CCBA;
+    border-radius: 12px;
+    padding: 20px 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s ease;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .envelope-btn:hover {
+    border-color: var(--gold);
+    background: rgba(200,149,90,0.05);
+    transform: translateY(-2px);
+  }
+
+  .envelope-btn.active {
+    border-color: var(--gold);
+    background: rgba(200,149,90,0.08);
+  }
+
+  .env-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .envelope-btn.active .env-icon { transform: rotate(-10deg); }
+
+  .env-sender {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 400;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .env-relation {
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .env-opened {
+    display: inline-block;
+    font-size: 10px;
+    background: rgba(200,149,90,0.15);
+    color: var(--gold);
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  /* letter display */
+  .letter-display {
+    background: #FFFDF9;
+    border: 0.5px solid #E0D5C5;
+    border-radius: 16px;
+    padding: 48px 52px;
+    min-height: 260px;
+    position: relative;
+    transition: opacity 0.3s ease;
+  }
+
+  .letter-display::before {
+    content: '"';
+    position: absolute;
+    top: 16px;
+    left: 32px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 60px;
+    color: var(--gold-light);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .letter-to {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 20px;
+  }
+
+  .letter-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .letter-sig {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .letter-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .letter-placeholder span { font-size: 32px; }
+
+  /* ===== DIVIDER ===== */
+  .ornament-divider {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--gold-light);
+    font-size: 20px;
+    letter-spacing: 12px;
+  }
+
+  /* ===== PHOTO SECTION ===== */
+  .photos-section {
+    padding: 80px 24px;
+    background: var(--cream-dark);
+  }
+
+  .photos-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .photos-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .photos-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .photos-header h2 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .photos-header p {
+    font-size: 14px;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* GANTI URL foto di bagian <script> bawah */
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 200px;
+    gap: 12px;
+  }
+
+  .photo-item {
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    background: var(--cream);
+    border: 0.5px solid #D9CCBA;
+  }
+
+  .photo-item.wide { grid-column: span 7; }
+  .photo-item.four-by-three { grid-column: span 6; }
+  .photo-item.tall { grid-row: span 2; }
+  .photo-item.portrait { grid-column: span 4; grid-row: span 2; }
+  .photo-item.medium { grid-column: span 5; }
+  .photo-item.small { grid-column: span 4; }
+
+  .photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .photo-item:hover img { transform: scale(1.04); }
+
+  .photo-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px 14px 12px;
+    background: linear-gradient(to top, rgba(44,36,24,0.75) 0%, transparent 100%);
+    color: #fff;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .photo-item:hover .photo-caption { opacity: 1; }
+
+  /* placeholder saat belum ada foto */
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+
+  .photo-placeholder-icon { font-size: 28px; opacity: 0.4; }
+
+  /* ===== CLOSING ===== */
+  .closing {
+    padding: 100px 24px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .closing-ornament {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  .closing h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+
+  .closing h2 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .closing p {
+    font-size: 15px;
+    color: var(--ink-light);
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+
+  .closing-hearts {
+    font-size: 24px;
+    letter-spacing: 10px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 0.5px solid #D9CCBA;
+    padding: 28px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(1.2); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .letter-display { padding: 36px 28px; }
+    .letter-display::before { font-size: 56px; left: 22px; top: 20px; }
+    .photo-grid { grid-template-columns: 1fr; grid-auto-rows: 200px; }
+    .photo-item.wide, .photo-item.medium, .photo-item.small, .photo-item.four-by-three, .photo-item.portrait { grid-column: span 1; }
+    .photo-item.tall, .photo-item.portrait { grid-row: span 2; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="top">
+  <p class="hero-ornament" id="hero-ornament">✦ 30 Mei ✦</p>
+
+  <h1 class="hero-title">
+    Selamat<br><em>Ulang Tahun</em>
+  </h1>
+
+  <p class="hero-names" id="hero-names">
+    <!-- GANTI: nama ayah & ibu -->
+    Bapak &amp; Mama
+  </p>
+
+  <p class="hero-date" id="hero-date">
+    <!-- GANTI: tanggal & tahun -->
+    30 Mei · Bersama sejak 2005
+  </p>
+
+  <div class="hero-scroll">
+    <a href="#surat">
+      <span>Scroll ke bawah</span>
+      <div class="scroll-line"></div>
+    </a>
+  </div>
+</section>
+
+<!-- ===== ORNAMENT ===== -->
+<div class="ornament-divider">· · ·</div>
+
+<!-- ===== LETTERS SECTION ===== -->
+<section class="section" id="surat">
+  <div class="section-label fade-in">Surat dari anak anakmu</div>
+
+  <!-- ENVELOPE BUTTONS -->
+  <!-- GANTI: tambah/hapus tombol sesuai jumlah saudara -->
+  <div class="envelope-grid fade-in" id="envelope-grid">
+    <!-- Tombol-tombol amplop akan di-generate lewat JS di bawah -->
+  </div>
+
+  <!-- LETTER DISPLAY -->
+  <div class="letter-display fade-in" id="letter-display">
+    <div class="letter-placeholder" id="letter-placeholder">
+      <span>✉</span>
+      <p>Pilih amplop di atas untuk membaca surat</p>
+    </div>
+    <div id="letter-content" style="display:none;">
+      <p class="letter-to" id="letter-to"></p>
+      <p class="letter-body" id="letter-body"></p>
+      <p class="letter-sig" id="letter-sig"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ORNAMENT ===== -->
+<div class="ornament-divider fade-in">· · ·</div>
+
+<!-- ===== PHOTO SECTION ===== -->
+<section class="photos-section" id="foto">
+  <div class="photos-inner">
+    <div class="photos-header fade-in">
+      <h2>Momen yang <em>selalu</em> kita ingat</h2>
+      <p>Setiap foto menyimpan cerita yang tak terlupakan</p>
+    </div>
+
+    <!-- PHOTO GRID -->
+    <!-- GANTI: ganti src="" dengan path foto kamu -->
+    <!-- Format: letakkan foto di folder yang sama, lalu tulis nama filenya -->
+    <div class="photo-grid fade-in" id="photo-grid">
+      <!-- Foto akan di-generate lewat JS di bawah -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== CLOSING ===== -->
+<section class="closing">
+  <p class="closing-ornament fade-in">✦ Untuk selamanya ✦</p>
+  <h2 class="fade-in">Terima kasih sudah menjadi <em>rumah</em> bagi kami</h2>
+  <p class="fade-in" id="closing-text">
+    <!-- GANTI: kalimat penutup -->
+    Tidak ada kata yang cukup untuk menggambarkan betapa besarnya terimakasih dan rasa syukur kami. Selamat ulang tahun, Bapak dan Mama. Semoga selalu sehat, bahagia, dan bersama.
+  </p>
+  <div class="closing-hearts fade-in">🤍 🤍 🤍</div>
+</section>
+
+<footer>
+  Dibuat dengan penuh kasih · 30 Mei
+</footer>
+
+<!-- ====================================================== -->
+<!--   ✏️  BAGIAN YANG PERLU KAMU EDIT                      -->
+<!-- ====================================================== -->
+<script>
+
+/* -------------------------------------------------------
+   1. DATA PENGIRIM SURAT
+   Tambah atau hapus objek {} sesuai jumlah anak/saudara
+   - sender   : nama pengirim yang tampil di tombol amplop
+   - relation : hubungan (anak pertama, anak kedua, dll)
+   - to       : sapaan di dalam surat
+   - body     : isi surat
+   - sig      : tanda tangan
+-------------------------------------------------------- */
+const letters = [
+  {
+    sender:   "Kakak",           // GANTI
+    relation: "Anak pertama",          // GANTI
+    to:       "Untuk Mama & Bapak,",
+    body:     "Mah, Pak, Makasih yaa udah ada. Selamat ulang tahun yaa, selamat berkurang 1 tahun umurnya.. semoga sehat selalu dan dilancarkan terus rezekinya. Dan dipanjangkan umurnya sampai bisa melihat anak anak kalian ini sukses di masa depan. <br><br> Untuk bapak semoga selalu dilancarkan rezekinya, dimudahkan urusannya di kantor, dan diberikan kekuatan untuk berjuang demi membahagiakan keluarga.. buat mama semoga selalu diberi kekuatan untuk mengurus rumah, tetap sabar menghadapi anak anak mu ini, dan diberikan kekuatan untuk bisa terus sabar demi keluarga.",  // GANTI
+    sig:      "— Kakak"         // GANTI
+  },
+  {
+    sender:   "Eneng",           // GANTI
+    relation: "Anak kedua",            // GANTI
+    to:       "Untuk Mama & Bapak,",
+    body:     "Selamat berkurangnya umur ma, yah. Untuk ayah mudah-mudahan semakin hari bahunya selalu kuat, nasi yang ayah makan selalu hangat, kendaraan yang ayah pakai selalu berfungsi dengan baik, tugas di kantornya selalu dipermudah. <br><br>Dan untuk mama, mudah-mudahan kaki mama selalu kuat buat melangkah, doa mama selalu tercapai setiap malamnya, juga, mudah-mudahan senyum mama terus mekar setiap harinya.",  // GANTI
+    sig:      "— Eneng"         // GANTI
+  },
+  {
+    sender:   "Untuk Keluarga",           // GANTI
+    relation: "Kakak & Eneng",           // GANTI (hapus blok ini kalau cuma 2 anak)
+    to:       "Untuk Mama & Bapak,",
+    body:     "Buat mama dan bapak, semoga kalian selalu sehat dimanapun kalian berada, selalu dilimpahkan rezekinya, dilancarkan segala urusannya. Dan yg paling penting adalah semoga tidak ada yg dapat memisahkan kalian berdua kecuali umur.. <br><br> Kita punya kesibukan masing masing.. jadi kita harus bisa saling ngerti satu sama lain karna kita  adalah keluarga.. bapak sibuk ngurusin urusan kantor, mama sibuk ngurusin masalah rumah, kakak sibuk masalah kampus dan perkuliahan, begitupun eneng sibuk dengan masalah di sekolahan.. jadi jangan ada perbandingan lagi.",  // GANTI
+    sig:      "— Anak Anakmu"         // GANTI
+  },
+];
+
+/* -------------------------------------------------------
+   2. DATA FOTO
+   - src     : path/URL foto. Contoh:
+               "./foto/momen1.jpg"  (kalau file lokal)
+               "https://..."        (kalau URL online)
+   - caption : keterangan foto (muncul saat hover)
+   - size    : "wide" | "medium" | "small" (tata letak)
+               wide   = foto lebar (7 kolom)
+               medium = foto sedang (5 kolom)
+               small  = foto kecil (4 kolom)
+   - tall    : true | false  → foto tinggi (2 baris)
+
+   Tips: urutan foto menentukan urutan tampil di grid.
+         Mulai dengan satu foto "wide" biar terlihat bagus.
+-------------------------------------------------------- */
+const photos = [
+  { src: "./foto1.jpeg",  caption: "Momen bersama",        size: "four-by-three",   tall: true },  // GANTI src (4:3)
+  { src: "./foto2.jpeg",  caption: "Kenangan indah",        size: "portrait", tall: false },  // GANTI src (9:16)
+  { src: "./foto3.jpeg",  caption: "Hari yang bahagia",     size: "portrait", tall: false },  // GANTI src (9:16)
+  { src: "./foto4.jpeg",  caption: "Selalu bersama",        size: "portrait", tall: false },  // GANTI src (9:16)
+];
+
+/* -------------------------------------------------------
+   3. TEKS HERO (opsional, bisa juga langsung edit HTML)
+   Kalau lebih suka edit HTML, hapus baris ini
+-------------------------------------------------------- */
+// document.getElementById('hero-names').textContent = "Ayah & Ibu";
+// document.getElementById('hero-date').textContent  = "30 Mei · Bersama sejak 1990";
+
+/* ====================================================== */
+/*   JANGAN EDIT DI BAWAH GARIS INI                       */
+/* ====================================================== */
+
+// --- Render amplop ---
+const grid = document.getElementById('envelope-grid');
+const openedSet = new Set();
+
+letters.forEach((letter, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'envelope-btn';
+  btn.dataset.index = i;
+  btn.innerHTML = `
+    <span class="env-icon">${openedSet.has(i) ? '📬' : '📩'}</span>
+    <span class="env-sender">${letter.sender}</span>
+    <span class="env-relation">${letter.relation}</span>
+  `;
+  btn.addEventListener('click', () => showLetter(i, btn));
+  grid.appendChild(btn);
+});
+
+let activeBtn = null;
+
+function showLetter(i, btn) {
+  const letter = letters[i];
+  const placeholder = document.getElementById('letter-placeholder');
+  const content = document.getElementById('letter-content');
+
+  document.getElementById('letter-to').textContent   = letter.to;
+  document.getElementById('letter-body').innerHTML = letter.body;
+  document.getElementById('letter-sig').textContent  = letter.sig;
+
+  placeholder.style.display = 'none';
+  content.style.display = 'block';
+
+  if (activeBtn) activeBtn.classList.remove('active');
+  btn.classList.add('active');
+  activeBtn = btn;
+
+  if (!openedSet.has(i)) {
+    openedSet.add(i);
+    btn.querySelector('.env-icon').textContent = '📬';
+    const tag = document.createElement('span');
+    tag.className = 'env-opened';
+    tag.textContent = 'Sudah dibuka';
+    if (!btn.querySelector('.env-opened')) btn.appendChild(tag);
+  }
+}
+
+// --- Render foto ---
+const photoGrid = document.getElementById('photo-grid');
+photos.forEach(p => {
+  const item = document.createElement('div');
+  item.className = `photo-item ${p.size}${p.tall ? ' tall' : ''}`;
+
+  if (p.src) {
+    item.innerHTML = `
+      <img src="${p.src}" alt="${p.caption}" loading="lazy">
+      <div class="photo-caption">${p.caption}</div>
+    `;
+  } else {
+    item.innerHTML = `
+      <div class="photo-placeholder">
+        <div class="photo-placeholder-icon">📷</div>
+        <span>${p.caption || 'Tambahkan foto'}</span>
+      </div>
+    `;
+  }
+  photoGrid.appendChild(item);
+});
+
+// --- Scroll fade-in ---
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// --- Confetti ---
+(function confetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#C8955A','#E8C99A','#B85C4A','#D4A88A','#FAF7F2','#8B7355'];
+  const pieces = Array.from({length: 90}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 5 + 3,
+    d: Math.random() * 2 + 1,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    tilt: Math.random() * 10 - 5,
+    tiltSpeed: Math.random() * 0.1 + 0.05,
+    angle: 0
+  }));
+
+  let frame = 0;
+  const maxFrames = 220;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (frame > maxFrames) { canvas.style.display = 'none'; return; }
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x + p.tilt, p.y);
+      ctx.rotate(p.angle * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 2.5);
+      ctx.restore();
+      p.y += p.d + 1.5;
+      p.angle += p.tiltSpeed * 3;
+      p.tilt = Math.sin(p.angle) * 12;
+    });
+    frame++;
+    requestAnimationFrame(draw);
+  }
+  setTimeout(draw, 600);
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+})();
+
+</script>
+</body>
+</html>
